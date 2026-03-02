@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hanz — Developer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --border: #1f1f1f;
+      --text: #e8e8e8;
+      --muted: #555;
+      --accent: #c8f135;
+      --accent2: #f13563;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* noise overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.4;
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.2rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+    }
+
+    .logo {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 8rem 2rem 4rem;
+      max-width: 900px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .hero-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.2s;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 10vw, 7rem);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.4s;
+    }
+
+    .hero h1 span {
+      color: var(--accent);
+      display: inline-block;
+    }
+
+    .hero-desc {
+      margin-top: 2rem;
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 400px;
+      line-height: 1.7;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.6s;
+    }
+
+    .hero-cta {
+      margin-top: 3rem;
+      display: flex;
+      gap: 1rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.8s;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0a0a0a;
+      border-color: var(--accent);
+      font-weight: 700;
+    }
+
+    .btn-primary:hover { background: transparent; color: var(--accent); }
+
+    .btn-secondary { color: var(--muted); }
+    .btn-secondary:hover { color: var(--text); border-color: var(--text); }
+
+    .hero-line {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 200px;
+      background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+      opacity: 0.4;
+    }
+
+    /* SECTIONS */
+    section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 6rem 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 3rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .section-label::after {
+      content: '';
+      height: 1px;
+      width: 60px;
+      background: var(--border);
+    }
+
+    /* ABOUT */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .about-text h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+    }
+
+    .about-text p {
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 0.95rem;
+    }
+
+    .about-stats {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .stat {
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .stat-num {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--accent);
+      font-family: 'Space Mono', monospace;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 0.4rem;
+    }
+
+    /* PROJECTS */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .project-card {
+      background: var(--bg);
+      padding: 2rem;
+      transition: background 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s;
+    }
+
+    .project-card:hover::before { transform: scaleX(1); }
+    .project-card:hover { background: var(--surface); }
+
+    .project-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .project-card h3 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .project-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .project-num {
+      position: absolute;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--border);
+      font-weight: 700;
+    }
+
+    /* SOCIALS */
+    .socials-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+    }
+
+    .social-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem 2rem;
+      background: var(--bg);
+      text-decoration: none;
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
+      group: true;
+    }
+
+    .social-item:hover {
+      background: var(--surface);
+      color: var(--accent);
+    }
+
+    .social-left {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .social-icon {
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .social-item:hover .social-icon { border-color: var(--accent); }
+
+    .social-name {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .social-handle {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.2rem;
+    }
+
+    .social-arrow {
+      font-size: 1.2rem;
+      color: var(--muted);
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .social-item:hover .social-arrow {
+      color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2rem;
+      text-align: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+    }
+
+    footer span { color: var(--accent); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 3.5rem; }
+      nav { padding: 1rem; }
+      .nav-links { gap: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">hanz.dev</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#socials">Socials</a></li>
+  </ul>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag">// portfolio</div>
+  <h1>Hey, I'm<br><span>Hanz.</span></h1>
+  <p class="hero-desc">Self-taught developer since 2023. I build things for the web and Discord — bots, tools, whatever comes to mind.</p>
+  <div class="hero-cta">
+    <a href="#projects" class="btn btn-primary">See my work</a>
+    <a href="#socials" class="btn btn-secondary">Get in touch</a>
+  </div>
+  <div class="hero-line"></div>
+</div>
+
+<section id="about">
+  <div class="section-label">About me</div>
+  <div class="about-grid">
+    <div class="about-text">
+      <h2>Self-taught.<br>Still learning.</h2>
+      <p>Started coding in 2023 with zero experience. Built my way up from nothing — no bootcamp, no degree, just curiosity and a lot of late nights. I make Discord bots and web projects that actually work.</p>
+    </div>
+    <div class="about-stats">
+      <div class="stat">
+        <div class="stat-num">2023</div>
+        <div class="stat-label">Started coding</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">2+</div>
+        <div class="stat-label">Bots built</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">PH</div>
+        <div class="stat-label">Based in Philippines</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <div class="section-label">Projects</div>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-tag">Discord Bot</div>
+      <h3>TickTock By Hanz</h3>
+      <p>A reminder bot that pings you so you don't forget stuff. Tell it what to remember and when, and it's got you covered.</p>
+      <div class="project-num">01</div>
+    </div>
+    <div class="project-card">
+      <div class="project-tag">Discord Bot</div>
+      <h3>Whisper</h3>
+      <p>An anonymous confession bot for Discord. Submit confessions via command or DM, vote on them, all 100% anonymous.</p>
+      <div class="project-num">02</div>
+    </div>
+    <div class="project-card">
+      <div class="project-tag">Web</div>
+      <h3>This Portfolio</h3>
+      <p>Built from scratch. Dark, minimal, no templates. Just raw HTML, CSS and a lot of tweaking.</p>
+      <div class="project-num">03</div>
+    </div>
+    <div class="project-card" style="display:flex;align-items:center;justify-content:center;min-height:180px;">
+      <p style="color:var(--muted);font-size:0.85rem;text-align:center;">More coming soon...</p>
+    </div>
+  </div>
+</section>
+
+<section id="socials">
+  <div class="section-label">Socials</div>
+  <div class="socials-list">
+    <a href="https://github.com/hanzgdev" target="_blank" class="social-item">
+      <div class="social-left">
+        <div class="social-icon">⌥</div>
+        <div>
+          <div class="social-name">GitHub</div>
+          <div class="social-handle">@hanzgdev</div>
+        </div>
+      </div>
+      <div class="social-arrow">→</div>
+    </a>
+    <a href="https://instagram.com/hanzseok" target="_blank" class="social-item">
+      <div class="social-left">
+        <div class="social-icon">◎</div>
+        <div>
+          <div class="social-name">Instagram</div>
+          <div class="social-handle">@hanzseok</div>
+        </div>
+      </div>
+      <div class="social-arrow">→</div>
+    </a>
+    <a href="https://tiktok.com/@hanseok" target="_blank" class="social-item">
+      <div class="social-left">
+        <div class="social-icon">♪</div>
+        <div>
+          <div class="social-name">TikTok</div>
+          <div class="social-handle">@hanseok</div>
+        </div>
+      </div>
+      <div class="social-arrow">→</div>
+    </a>
+    <a href="https://discord.com/users/hanzseok" target="_blank" class="social-item">
+      <div class="social-left">
+        <div class="social-icon">#</div>
+        <div>
+          <div class="social-name">Discord</div>
+          <div class="social-handle">@hanzseok</div>
+        </div>
+      </div>
+      <div class="social-arrow">→</div>
+    </a>
+    <a href="https://www.facebook.com/profile.php?id=61587947256259" target="_blank" class="social-item">
+      <div class="social-left">
+        <div class="social-icon">f</div>
+        <div>
+          <div class="social-name">Facebook</div>
+          <div class="social-handle">Hanz</div>
+        </div>
+      </div>
+      <div class="social-arrow">→</div>
+    </a>
+  </div>
+</section>
+
+<footer>
+  built by <span>hanz</span> — 2026
+</footer>
+
+</body>
+</html>
